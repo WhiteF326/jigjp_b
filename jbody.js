@@ -28113,7 +28113,6 @@
     async function allQuery(userid) {
       let retdata = null;
       await fdb.equalTo("UserId", userid).fetchAll().then(async d => {
-        console.log(d);
         retdata = d;
       }).catch(err => {
         console.log(err);
@@ -28161,7 +28160,7 @@
           subdiv.setAttribute("class", "subdiv");
           subdiv.value = subs.name[i];
           subdiv.setAttribute("style", "font-size: " + (15 / subs.name[i].length) + "vh");
-          
+
           //付箋の部分
           const fbdiv = document.createElement("div");
           fbdiv.setAttribute("class", "fbdiv");
@@ -28175,12 +28174,36 @@
         }
 
         //付箋の追加
+        let i = 0;
         allf.forEach(ef => {
-          const f = document.createElement("div");
-          f.setAttribute("class", "fsdiv");
-          f.setAttribute("style", "background-color: " + ef.Color + ";");
-          f.appendChild(document.createTextNode(ef.Content));
-          document.getElementById("fb" + ef.SubjectNo).appendChild(f);
+          i++;
+
+          //不可視の場合はオブジェクトの生成そのものをしない
+          if (ef.Visible == "True") {
+
+            //textareaの作成
+            const f = document.createElement("textarea");
+            f.setAttribute("class", "fsdiv");
+            f.setAttribute("style", "background-color: " + ef.Color + ";");
+            f.value = ef.Content;
+
+            //フォーカスが外れた際に編集結果でデータを更新する
+            f.addEventListener("focusout", async () => {
+              ef.set("Content", f.value);
+              return await ef.update();
+            });
+            f.addEventListener("click", async e => {
+              if(e.ctrlKey){
+                f.remove();
+                ef.set("Visible", "False");
+                return await ef.update();
+              }
+            });
+
+            //追加
+            document.getElementById("fb" + ef.SubjectNo).appendChild(f);
+          }
+
         });
 
       }
