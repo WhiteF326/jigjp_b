@@ -1,0 +1,44 @@
+input.subdiv{
+    background-color: rgb(178, 255, 192);
+    height: 100%;
+    width: 20%;
+    border: 2px #7fffd4 solid;
+    margin: 0px;
+    display: block;
+    text-align: center;
+    padding: 0px;
+}
+.subdiv:focus{
+    outline: none;
+}
+
+div.fbdiv{
+    background-color: whitesmoke;
+    height: 100%;
+    width: calc(80%);
+    border: 2px aquamarine solid;
+    margin: 0px;
+    display: inline-block;
+}
+
+div.fsdiv{
+    height: 200px;
+    width: 200px;
+    display: inline-block;
+    border-right: 2px aquamarine solid;
+}
+
+p.linediv{
+    width: 100%;
+    height: 200px;
+    margin: 0px;
+    display: flex;
+}
+
+div.pdiv{
+    height: calc(100vh - 60px);
+    width: calc(100% - 40px);
+    margin: 20px;
+    display: inline-block;
+    overflow-y: scroll;
+}
