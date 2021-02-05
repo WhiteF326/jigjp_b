@@ -3,6 +3,7 @@ input.subdiv{
     height: 100%;
     width: 20%;
     border: 2px #7fffd4 solid;
+    border-right: none;
     margin: 0px;
     display: block;
     text-align: center;
@@ -15,17 +16,29 @@ input.subdiv{
 div.fbdiv{
     background-color: whitesmoke;
     height: 100%;
+    max-height: 100%;
     width: calc(80%);
     border: 2px aquamarine solid;
     margin: 0px;
-    display: inline-block;
+    display: flex;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
-div.fsdiv{
+textarea.fsdiv{
     height: 200px;
     width: 200px;
-    display: inline-block;
+    scroll-snap-align: start;
+    border: none;
     border-right: 2px aquamarine solid;
+    display: flex;
+    flex: 0 0 200px;
+    align-self: start;
+    font-size: large;
+}
+.fsdiv:focus{
+    outline: none;
 }
 
 p.linediv{
@@ -41,4 +54,26 @@ div.pdiv{
     margin: 20px;
     display: inline-block;
     overflow-y: scroll;
+}
+
+button.addbtn{
+    border: 1px solid silver;
+    background-color: gainsboro;
+    color: silver;
+    width: 180px;
+    height: 180px;
+    font-size: 180px;
+    border-radius: 50%;
+    display: flex;
+    flex: 0 0 180px;
+    line-height: 180px;
+    align-self: center;
+    justify-content: center;
+}
+.addbtn:focus{
+    outline: none;
+}
+.addbtn:active{
+    background-color: darkgray;
+    color: gray;
 }

@@ -28154,12 +28154,22 @@
           //1行のまとまり
           const linep = document.createElement("p");
           linep.setAttribute("class", "linediv");
+          linep.setAttribute("id", "linep" + (i + 1));
 
           //小項目の部分
           const subdiv = document.createElement("input");
           subdiv.setAttribute("class", "subdiv");
+          subdiv.setAttribute("id", "sub" + (i + 1));
           subdiv.value = subs.name[i];
           subdiv.setAttribute("style", "font-size: " + (15 / subs.name[i].length) + "vh");
+          subdiv.addEventListener("focusout", () => {
+            subs.name[Number(subdiv.parentElement.id.slice(5)) - 1] = subdiv.value;
+            fdb.equalTo("SubjectNo", Number(subdiv.parentElement.id.slice(5))).fetchAll().then(x => {
+              x.forEach(d => {
+                d.set("SubjectName", subdiv.value).update().catch(err => console.log(err));
+              });
+            });
+          });
 
           //付箋の部分
           const fbdiv = document.createElement("div");
@@ -28173,38 +28183,131 @@
 
         }
 
+        //小項目の追加ボタン
+        const saddbtn = document.createElement("button");
+        saddbtn.setAttribute("class", "addbtn");
+        saddbtn.innerText = "+";
+        const slinep = document.createElement("p");
+        slinep.setAttribute("class", "linediv");
+        slinep.appendChild(saddbtn);
+
+        saddbtn.addEventListener("click", () => {
+          //1行のまとまり
+          const linep = document.createElement("p");
+          linep.setAttribute("class", "linediv");
+          linep.setAttribute("id", "linep" + (subs.number.length + 1));
+
+          //小項目の部分
+          const subdiv = document.createElement("input");
+          subdiv.setAttribute("class", "subdiv");
+          subdiv.setAttribute("id", "sub" + (subs.number.length + 1));
+          subdiv.value = "";
+          subdiv.setAttribute("style", "font-size: 3vh");
+          subdiv.addEventListener("focusout", () => {
+            subs.name[Number(subdiv.parentElement.id.slice(5)) - 1] = subdiv.value;
+            fdb.equalTo("SubjectNo", Number(subdiv.parentElement.id.slice(5))).fetchAll().then(x => {
+              x.forEach(d => {
+                d.set("SubjectName", subdiv.value).update().catch(err => console.log(err));
+              });
+            });
+          });
+
+          //付箋の部分
+          const fbdiv = document.createElement("div");
+          fbdiv.setAttribute("class", "fbdiv");
+          fbdiv.setAttribute("id", "fb" + (subs.number.length + 1));
+
+          //追加処理
+          linep.appendChild(subdiv);
+          linep.appendChild(fbdiv);
+          document.getElementById("pdiv").insertBefore(linep, slinep);
+
+          //付箋追加ボタン
+          const addbtn = document.createElement("button");
+          addbtn.setAttribute("class", "addbtn");
+          addbtn.innerText = "+";
+
+          addbtn.addEventListener("click", () => {
+            //付箋の追加
+            const f = document.createElement("textarea");
+            f.setAttribute("class", "fsdiv");
+            f.setAttribute("style", "background-color: white;");
+            f.value ="";
+            document.getElementById("fb" + addbtn.parentElement.id.slice(2)).insertBefore(f, addbtn);
+            new fdb({
+              Color: "white",
+              Content: "",
+              Progress: 0,
+              SubjectName: subs.name[Number(addbtn.parentElement.id.slice(2))],
+              SubjectNo: Number(addbtn.parentElement.id.slice(2)),
+              UserId: 1,
+              Visible: "True",
+            }).save().catch(err => console.log(err));
+          });
+          document.getElementById("fb" + (subs.number.length + 1)).appendChild(addbtn);
+
+          //内部処理
+          subs.number.push((subs.number.length + 1));
+          subs.name.push("Default");
+        });
+        document.getElementById("pdiv").appendChild(slinep);
+
         //付箋の追加
-        let i = 0;
-        allf.forEach(ef => {
-          i++;
+        for(let i in allf){
 
-          //不可視の場合はオブジェクトの生成そのものをしない
-          if (ef.Visible == "True") {
-
+          if(allf[i].Visible == "True"){
             //textareaの作成
             const f = document.createElement("textarea");
             f.setAttribute("class", "fsdiv");
-            f.setAttribute("style", "background-color: " + ef.Color + ";");
-            f.value = ef.Content;
+            f.setAttribute("style", "background-color: " + allf[i].Color + ";");
+            f.value = allf[i].Content;
 
             //フォーカスが外れた際に編集結果でデータを更新する
             f.addEventListener("focusout", async () => {
-              ef.set("Content", f.value);
-              return await ef.update();
+              allf[i].set("Content", f.value);
+              allf[i].set("SubjectName", f.parentElement.parentElement.firstElementChild.value);
+              return await allf[i].update();
             });
             f.addEventListener("click", async e => {
               if(e.ctrlKey){
                 f.remove();
-                ef.set("Visible", "False");
-                return await ef.update();
+                allf[i].set("Visible", "False");
+                return await allf[i].update();
               }
             });
+            document.getElementById("fb" + allf[i].SubjectNo).appendChild(f);
 
-            //追加
-            document.getElementById("fb" + ef.SubjectNo).appendChild(f);
           }
+        }
 
-        });
+        //付箋追加ボタン
+        for(let i in subs.name){
+          //ボタンのデザイン
+          const addbtn = document.createElement("button");
+          addbtn.setAttribute("class", "addbtn");
+          addbtn.innerText = "+";
+
+          addbtn.addEventListener("click", () => {
+            //付箋の追加
+            const f = document.createElement("textarea");
+            f.setAttribute("class", "fsdiv");
+            f.setAttribute("style", "background-color: white;");
+            f.value ="";
+            document.getElementById("fb" + (Number(i) + 1)).insertBefore(f, addbtn);
+            new fdb({
+              Color: "white",
+              Content: "",
+              Progress: 0,
+              SubjectName: subs.name[i],
+              SubjectNo: (Number(i) + 1),
+              UserId: 1,
+              Visible: "True",
+            }).save().catch(err => console.log(err));
+          });
+
+          //追加
+          document.getElementById("fb" + (Number(i) + 1)).appendChild(addbtn);
+        }
 
       }
     }
