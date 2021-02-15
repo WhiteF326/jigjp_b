@@ -1,14 +1,65 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>FuseNote ver β0.01</title>
-        <link rel="stylesheet" href="style.css">
-        <script type="text/javascript" src="jbody.js"></script>
-    </head>
-    <body>
-        <div class="pdiv" id="pdiv"></div>
-        <div id="layer"></div>
-        <div id="popup"></div>
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <title>FuseNote ver β0.01</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
+    <script type="text/javascript" src="jbody.js"></script>
+</head>
+
+<body>
+    <div>
+        <button id="hlp" class="hlp">ヘルプ</button>
+    </div>
+    <div class="pdiv" id="pdiv"></div>
+    <div id="layer" class="layer">
+        <div id="popup" class="popup">
+            <div>付箋の色を選択してください。</div>
+            <input type="color" class="cpick" id="cpick">
+            <div id="cdiv0" class="cdiv">
+                <button type="button" style="background-color: #ffc6c6;" id="cbt0" class="cbtn"></button>
+                <button type="button" style="background-color: #ffc6e2;" id="cbt1" class="cbtn"></button>
+                <button type="button" style="background-color: #ffc6ff;" id="cbt2" class="cbtn"></button>
+                <button type="button" style="background-color: #e2c6ff;" id="cbt3" class="cbtn"></button>
+                <button type="button" style="background-color: #c6c6ff;" id="cbt4" class="cbtn"></button>
+                <button type="button" style="background-color: #c6e2ff;" id="cbt5" class="cbtn"></button>
+            </div>
+            <div id="cdiv1" class="cdiv">
+                <button type="button" style="background-color: #c6ffff;" id="cbt6" class="cbtn"></button>
+                <button type="button" style="background-color: #c6ffe2;" id="cbt7" class="cbtn"></button>
+                <button type="button" style="background-color: #c6ffc6;" id="cbt8" class="cbtn"></button>
+                <button type="button" style="background-color: #e2ffc6;" id="cbt9" class="cbtn"></button>
+                <button type="button" style="background-color: #ffffc6;" id="cbt10" class="cbtn"></button>
+                <button type="button" style="background-color: #ffe2c6;" id="cbt11" class="cbtn"></button>
+            </div>
+            <button id="modalclose" class="modalclose">閉じる</button>
+        </div>
+    </div>
+    <div style="display: none;" id="m"></div>
+    <div id="hlayer" class="layer">
+        <div id="hpopup" class="hpopup">
+            <div id="helptext" class="helptext">
+                <h1>FuseNoteについて</h1>
+                <p>本ツールは、項目ごとに付箋を並べる形式のメモツールです。</p>
+                <p>項目ひとつごとに1行が割り当てられています。</p>
+                <p>
+                    付箋は各項目行の一番右にある＋ボタンで追加、<br>
+                    項目は最後の項目行の下にある＋ボタンで追加できます。
+                </p>
+                <p>
+                    付箋はctrlキーを押しながらクリックすると削除できます。<br>
+                    ただし元に戻せないので注意してください。
+                </p>
+                <p>
+                    付箋をshiftキーを押しながらクリックすると色を変更できます。
+                    
+                </p>
+            </div>
+            <button id="hlpclose" class="hmodalclose">閉じる</button>
+        </div>
+    </div>
+</body>
+
 </html>
