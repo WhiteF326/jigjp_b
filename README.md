@@ -3,7 +3,7 @@
 ### jig.jp pre_internship task / HTML + CSS + JavaScript Production
 
 
-## ver.β0.05
+## ver.β0.01
 
 
 ## クライアントシステム要件
