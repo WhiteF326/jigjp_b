@@ -1,5 +1,9 @@
+# FuseNote
 ## jig.jp インターンシップ事前課題 / HTML + CSS + JavaScript 制作
 ### jig.jp pre_internship task / HTML + CSS + JavaScript Production
+
+
+## ver.β0.05
 
 
 ## クライアントシステム要件
