@@ -20,7 +20,7 @@
 
 
 ## Note
-- JavaScriptの本体は28418～28675行です。
+- JavaScriptの本体はapp.jsです。
 - HTMLはindex.htmlです。
 - ~~文法がわからないので、~~ jQueryは使用していません。
 
