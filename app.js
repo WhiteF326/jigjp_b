@@ -1,30 +1,32 @@
+"use strict";
+
 const ncmbClient = new NCMB("b53a849745e39e380c628263073d639407ddf57b21abf65261b279f6a49631b9", "ab9829b0f12baed4236368928577728c15f26fab97caf3c9c2520cb94c999738");
 const fdb = ncmbClient.DataStore("Fusen");
 let cdgbuf = [null, null];
 
 async function allQuery(userid) {
-    let retdata = null;
-    await fdb.equalTo("UserId", userid).fetchAll().then(async d => {
-        retdata = d;
-    }).catch(err => {
+    try {
+        return await fdb.equalTo("UserId", userid).fetchAll();
+    } catch (err) {
         console.log(err);
-        retdata = undefined;
-    });
-    return retdata;
+        return null;
+    }
 }
 
 async function add(json) {
-    return new fdb(json).save().then(() => { return true; })
-        .catch(err => {
-            console.log(err);
-            return false;
-        });
+    try {
+        await new fdb(json).save();
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
 }
 
-function rgbtohex(rgbx){
-    let r = ("00" + Number(rgbx.split("(")[1].split(",")[0]).toString(16)).substr(-2);
-    let g = ("00" + Number(rgbx.split("(")[1].split(",")[1]).toString(16)).substr(-2);
-    let b = ("00" + Number(rgbx.split("(")[1].split(",")[2].split(")")[0]).toString(16)).substr(-2);
+function rgbtohex(rgbx) {
+    const r = ("00" + Number(rgbx.split("(")[1].split(",")[0]).toString(16)).substr(-2);
+    const g = ("00" + Number(rgbx.split("(")[1].split(",")[1]).toString(16)).substr(-2);
+    const b = ("00" + Number(rgbx.split("(")[1].split(",")[2].split(")")[0]).toString(16)).substr(-2);
     return "#" + r + g + b;
 }
 
@@ -58,44 +60,48 @@ function retpbtn(x, n, fbx) {
     addbtn.innerText = "+";
     document.getElementById("fb" + fbx).appendChild(addbtn);
 
-    addbtn.addEventListener("click", async() => {
-        //付箋の追加
-        const f = document.createElement("textarea");
-        f.setAttribute("class", "fsdiv");
-        f.setAttribute("style", "background-color: white;");
-        f.value = "";
-        document.getElementById("fb" + x).insertBefore(f, addbtn);
-        const nfdb = await new fdb({
-            Color: "white",
-            Content: "",
-            Progress: 0,
-            SubjectName: n,
-            SubjectNo: x,
-            UserId: 1,
-            Visible: "True",
-        }).save().catch(err => console.log(err));
-        //フォーカスが外れた際に編集結果でデータを更新する
-        f.addEventListener("focusout", async() => {
-            nfdb.set("Content", f.value);
-            nfdb.set("SubjectName", f.parentElement.parentElement.firstElementChild.value);
-            return await nfdb.update();
-        });
-        //shift,ctrl押しながらクリック
-        f.addEventListener("click", async e => {
-            if (e.shiftKey) {
-                //モーダルを表示
-                document.getElementById("cpick").value = "#FFFFFF";
-                document.getElementById("layer").style.visibility = "visible";
-                document.getElementById("popup").style.visibility = "visible";
-                document.getElementById("modalclose").style.visibility = "visible";
-                cdgbuf = [f, nfdb];
-            }
-            if (e.ctrlKey) {
-                f.remove();
-                nfdb.set("Visible", "False");
+    addbtn.addEventListener("click", async () => {
+        try {
+            //付箋の追加
+            const f = document.createElement("textarea");
+            f.setAttribute("class", "fsdiv");
+            f.setAttribute("style", "background-color: white;");
+            f.value = "";
+            document.getElementById("fb" + x).insertBefore(f, addbtn);
+            const nfdb = await new fdb({
+                Color: "white",
+                Content: "",
+                Progress: 0,
+                SubjectName: n,
+                SubjectNo: x,
+                UserId: 1,
+                Visible: "True",
+            }).save();
+            //フォーカスが外れた際に編集結果でデータを更新する
+            f.addEventListener("focusout", async () => {
+                nfdb.set("Content", f.value);
+                nfdb.set("SubjectName", f.parentElement.parentElement.firstElementChild.value);
                 return await nfdb.update();
-            }
-        });
+            });
+            //shift,ctrl押しながらクリック
+            f.addEventListener("click", async e => {
+                if (e.shiftKey) {
+                    //モーダルを表示
+                    document.getElementById("cpick").value = "#FFFFFF";
+                    document.getElementById("layer").style.visibility = "visible";
+                    document.getElementById("popup").style.visibility = "visible";
+                    document.getElementById("modalclose").style.visibility = "visible";
+                    cdgbuf = [f, nfdb];
+                }
+                if (e.ctrlKey) {
+                    f.remove();
+                    nfdb.set("Visible", "False");
+                    return await nfdb.update();
+                }
+            });
+        } catch (err) {
+            console.log(err);
+        }
     });
 
     return addbtn;
@@ -104,7 +110,7 @@ function retpbtn(x, n, fbx) {
 window.onload = async function() {
     //ユーザー判定
     let userid = 1;
-    if(window.location.search){
+    if (window.location.search) {
         userid = Number(window.location.search.substring(1).split("&")[0].split("=")[1]);
     }
     console.log(userid);
@@ -135,7 +141,7 @@ window.onload = async function() {
     });
 
     //全ての付箋情報と小項目情報を読み込む
-    let allf = await allQuery(userid);
+    const allf = await allQuery(userid);
     if (allf == void 0) {
         //読み込みに失敗した
         alert("付箋情報の読み込みに失敗しました。リロードします。");
@@ -143,7 +149,7 @@ window.onload = async function() {
     } else {
 
         //小項目を計算
-        let subs = { number: [], name: [] }; //小項目を追加する
+        const subs = { number: [], name: [] }; //小項目を追加する
         allf.forEach(ef => {
             if (subs.number.find(e => e == ef.SubjectNo) == void 0) {
                 //小項目を追加
@@ -214,7 +220,7 @@ window.onload = async function() {
         document.getElementById("pdiv").appendChild(slinep);
 
         //付箋の追加
-        for (let i in allf) {
+        for (const i in allf) {
 
             if (allf[i].Visible == "True") {
                 //textareaの作成
@@ -250,7 +256,7 @@ window.onload = async function() {
         }
 
         //付箋追加ボタン
-        for (let i in subs.name) {
+        for (const i in subs.name) {
             //ボタンのデザイン
             const addbtn = retpbtn((Number(i) + 1), subs.name[i], (Number(i) + 1), subs);
 
@@ -259,7 +265,7 @@ window.onload = async function() {
         }
 
         //モーダル内ボタンの挙動設定
-        for (let i = 0; i < 12; i++){
+        for (let i = 0; i < 12; i++) {
             document.getElementById("cbt" + i).addEventListener("click", () => {
                 //カラーピッカーの色変更
                 document.getElementById("cpick").value = rgbtohex(document.getElementById("cbt" + i).style.backgroundColor.toString());
